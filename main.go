@@ -20,7 +20,7 @@ var (
 	showVersion  = flag.Bool("version", false, "버전 정보 출력")
 )
 
-const version = "v0.0.2"
+const version = "v0.0.3"
 
 func grepFile(pattern *regexp.Regexp, filename string, showFilename bool) {
 	file, err := os.Open(filename)
@@ -152,16 +152,35 @@ func processPath(pattern *regexp.Regexp, path string) {
 }
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, `사용법: grepa [옵션] 패턴 [파일...]
+
+grepa는 grep 기능을 간단하게 구현한 경량 CLI 도구입니다.
+
+옵션:
+`)
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, `
+예시:
+  grepa -o "[a-zA-Z0-9._%%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" access.log   # 이메일 주소 추출
+  grepa " 2[\d]{2} " access.log                                           # 200번대 HTTP 응답 코드 추출
+  grepa " POST " access.log                                               # POST 요청 추출
+  grepa "wreply=" access.log                                              # wreply 파라미터 추출
+  grepa -o "https?://[a-zA-Z0-9.-]+(:[0-9]+)?" access.log                 # URL 추출
+  grepa -o '"https?://[^"]+"' access.log                                  # Referer 추출
+
+`)
+	}
+
 	flag.Parse()
 
 	if *showVersion {
-		fmt.Println("accessloga", version)
+		fmt.Println("grepa", version)
 		return
 	}
 
 	if flag.NArg() < 1 {
-		fmt.Println("사용법: go run main.go [옵션] 패턴 [파일]")
-		flag.PrintDefaults()
+		flag.Usage()
 		return
 	}
 
