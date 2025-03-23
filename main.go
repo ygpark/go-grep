@@ -11,11 +11,12 @@ import (
 )
 
 var (
-	ignoreCase = flag.Bool("i", false, "대소문자 구분 없이 검색")
-	lineNumber = flag.Bool("n", false, "라인 번호 출력")
-	invert     = flag.Bool("v", false, "매칭되지 않는 줄 출력")
-	color      = flag.Bool("color", false, "일치하는 부분 색상 출력")
-	recursive  = flag.Bool("r", false, "디렉토리 재귀 검색")
+	ignoreCase   = flag.Bool("i", false, "대소문자 구분 없이 검색")
+	lineNumber   = flag.Bool("n", false, "라인 번호 출력")
+	invert       = flag.Bool("v", false, "매칭되지 않는 줄 출력")
+	color        = flag.Bool("color", false, "일치하는 부분 색상 출력")
+	recursive    = flag.Bool("r", false, "디렉토리 재귀 검색")
+	onlyMatching = flag.Bool("o", false, "일치하는 부분만 출력")
 )
 
 func grepFile(pattern *regexp.Regexp, filename string, showFilename bool) {
@@ -31,22 +32,44 @@ func grepFile(pattern *regexp.Regexp, filename string, showFilename bool) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		match := pattern.MatchString(line)
-		if *invert {
-			match = !match
+
+		if *onlyMatching && *invert {
+			fmt.Fprintln(os.Stderr, "-o 옵션과 -v 옵션은 함께 사용할 수 없습니다.")
+			os.Exit(1)
 		}
-		if match {
-			prefix := ""
-			if showFilename {
-				prefix += filename + ":"
+
+		if *onlyMatching {
+			matches := pattern.FindAllString(line, -1)
+			if matches != nil {
+				for _, match := range matches {
+					prefix := ""
+					if showFilename {
+						prefix += filename + ":"
+					}
+					if *lineNumber {
+						prefix += fmt.Sprintf("%d:", lineNum)
+					}
+					fmt.Println(prefix + match)
+				}
 			}
-			if *lineNumber {
-				prefix += fmt.Sprintf("%d:", lineNum)
+		} else {
+			match := pattern.MatchString(line)
+			if *invert {
+				match = !match
 			}
-			if *color && !*invert {
-				line = pattern.ReplaceAllString(line, "\033[31m$0\033[0m")
+			if match {
+				prefix := ""
+				if showFilename {
+					prefix += filename + ":"
+				}
+				if *lineNumber {
+					prefix += fmt.Sprintf("%d:", lineNum)
+				}
+				if *color && !*invert {
+					line = pattern.ReplaceAllString(line, "\033[31m$0\033[0m")
+				}
+				fmt.Println(prefix + line)
 			}
-			fmt.Println(prefix + line)
 		}
 		lineNum++
 	}
@@ -62,19 +85,38 @@ func grepStdin(pattern *regexp.Regexp) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		match := pattern.MatchString(line)
-		if *invert {
-			match = !match
+
+		if *onlyMatching && *invert {
+			fmt.Fprintln(os.Stderr, "-o 옵션과 -v 옵션은 함께 사용할 수 없습니다.")
+			os.Exit(1)
 		}
-		if match {
-			prefix := ""
-			if *lineNumber {
-				prefix = fmt.Sprintf("%d:", lineNum)
+
+		if *onlyMatching {
+			matches := pattern.FindAllString(line, -1)
+			if matches != nil {
+				for _, match := range matches {
+					prefix := ""
+					if *lineNumber {
+						prefix = fmt.Sprintf("%d:", lineNum)
+					}
+					fmt.Println(prefix + match)
+				}
 			}
-			if *color && !*invert {
-				line = pattern.ReplaceAllString(line, "\033[31m$0\033[0m")
+		} else {
+			match := pattern.MatchString(line)
+			if *invert {
+				match = !match
 			}
-			fmt.Println(prefix + line)
+			if match {
+				prefix := ""
+				if *lineNumber {
+					prefix = fmt.Sprintf("%d:", lineNum)
+				}
+				if *color && !*invert {
+					line = pattern.ReplaceAllString(line, "\033[31m$0\033[0m")
+				}
+				fmt.Println(prefix + line)
+			}
 		}
 		lineNum++
 	}
