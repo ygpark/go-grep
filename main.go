@@ -20,7 +20,7 @@ var (
 	showVersion  = flag.Bool("version", false, "버전 정보 출력")
 )
 
-const version = "v0.0.3"
+const version = "v0.0.4"
 
 func grepFile(pattern *regexp.Regexp, filename string, showFilename bool) {
 	file, err := os.Open(filename)
