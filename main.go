@@ -17,7 +17,10 @@ var (
 	color        = flag.Bool("color", false, "일치하는 부분 색상 출력")
 	recursive    = flag.Bool("r", false, "디렉토리 재귀 검색")
 	onlyMatching = flag.Bool("o", false, "일치하는 부분만 출력")
+	showVersion  = flag.Bool("version", false, "버전 정보 출력")
 )
+
+const version = "v0.0.2"
 
 func grepFile(pattern *regexp.Regexp, filename string, showFilename bool) {
 	file, err := os.Open(filename)
@@ -150,6 +153,11 @@ func processPath(pattern *regexp.Regexp, path string) {
 
 func main() {
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Println("accessloga", version)
+		return
+	}
 
 	if flag.NArg() < 1 {
 		fmt.Println("사용법: go run main.go [옵션] 패턴 [파일]")
