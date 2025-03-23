@@ -162,7 +162,7 @@ grepa는 grep 기능을 간단하게 구현한 경량 CLI 도구입니다.
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, `
 예시:
-  grepa -o "[a-zA-Z0-9._%%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" access.log   # 이메일 주소 추출
+  grepa -o "[a-zA-Z0-9._%%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" access.log    # 이메일 주소 추출
   grepa " 2[\d]{2} " access.log                                           # 200번대 HTTP 응답 코드 추출
   grepa "POST " access.log                                                # POST 요청 추출
   grepa "wreply=" access.log                                              # wreply 파라미터 추출
