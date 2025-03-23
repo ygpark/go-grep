@@ -1,114 +1,77 @@
-# ggrep - A Grep Alternative in Golang
+# grepa
 
-`ggrep` is a command-line tool written in Golang that functions as an alternative to Linux `grep`. It supports **regular expressions**, **recursive search**, **line numbers**, **color highlighting**, and **various options** similar to GNU `grep`.
+`grepa`는 Go로 구현된 간단하고 강력한 `grep` 클론 도구입니다. 파일 또는 표준 입력에서 정규표현식 패턴을 검색하며, 다양한 옵션을 통해 유연한 검색 기능을 제공합니다.
 
-## Features
+## 🛠️ 기능
 
-- ✅ Supports **regular expressions** (default behavior)
-- ✅ **Recursive search** (`-r`) for searching within directories
-- ✅ **Invert match** (`-v`) to exclude matching lines
-- ✅ **Count matches** (`-c`) to display the number of occurrences
-- ✅ **Ignore case** (`-i`) for case-insensitive search
-- ✅ **Show line numbers** (`-n`) for better readability
-- ✅ **Color highlighting** for matched patterns
+- 정규표현식 기반 검색
+- 대소문자 구분 없이 검색 (`-i`)
+- 라인 번호 출력 (`-n`)
+- 일치하지 않는 줄 출력 (`-v`)
+- 일치한 텍스트 색상 강조 (`--color`)
+- 디렉토리 재귀 검색 (`-r`)
+- 표준 입력 처리 지원 (파이프 사용 가능)
 
-## Installation
+## 📆 설치
 
-To install `ggrep`, make sure you have Go installed and run:
-
-```sh
-# Clone the repository
-git clone https://github.com/your-repo/ggrep.git
-cd ggrep
-
-# Build the binary
-go build -o ggrep
-
-# Move to a system-wide directory (optional)
-sudo mv ggrep /usr/local/bin/
+```bash
+git clone https://github.com/your-username/grepa.git
+cd grepa
+go build -o grepa main.go
 ```
 
-## Usage
+## 🚀 사용법
 
-### Basic Search
-
-Search for a pattern in a file:
-
-```sh
-ggrep "error" example.txt
+```bash
+./grepa [옵션] "패턴" [파일 또는 디렉토리]
 ```
 
-### Recursive Search (`-r`)
+파일 없이 사용하면 `stdin`(표준 입력)을 통해 검색할 수 있습니다.
 
-Search inside all files in a directory:
+### 예시
 
-```sh
-ggrep -r "error" logs/
+```bash
+# test.txt 파일에서 "error"를 검색
+./grepa "error" test.txt
+
+# 대소문자 무시하고 검색
+./grepa -i "error" test.txt
+
+# 라인 번호 포함해서 출력
+./grepa -n "error" test.txt
+
+# 일치하지 않는 줄 출력
+./grepa -v "success" test.txt
+
+# 검색된 문자열을 빨간색으로 강조
+./grepa --color "fail" test.txt
+
+# 디렉토리 내부 모든 파일을 재귀적으로 검색
+./grepa -r "panic" ./logs
+
+# 파이프로 사용
+cat access.log | ./grepa "404"
 ```
 
-### Case-Insensitive Search (`-i`)
+## 🔧 옵션
 
-```sh
-ggrep -i "error" logs.txt
+| 옵션      | 설명                              |
+| --------- | --------------------------------- |
+| `-i`      | 대소문자 구분 없이 검색           |
+| `-n`      | 라인 번호 출력                    |
+| `-v`      | 매칭되지 않는 줄 출력             |
+| `--color` | 일치하는 문자열을 빨간색으로 강조 |
+| `-r`      | 디렉토리 재귀 검색                |
+
+## 📁 예제
+
+```bash
+echo -e "Hello\nWorld\nHELLO" | ./grepa -i "hello"
+# 결과:
+# Hello
+# HELLO
 ```
 
-### Show Line Numbers (`-n`)
+## 📜 라이센스
 
-```sh
-ggrep -n "warning" logs.txt
-```
-
-### Invert Match (`-v`)
-
-Find lines **not** containing the pattern:
-
-```sh
-ggrep -v "DEBUG" logs.txt
-```
-
-### Count Matches (`-c`)
-
-Count occurrences of the pattern:
-
-```sh
-ggrep -c "ERROR" logs.txt
-```
-
-### Highlight Matches (Default)
-
-Matches are automatically highlighted in **red**.
-
-### Search Using Regular Expressions
-
-```sh
-ggrep "[0-9]+" data.txt  # Find numbers
-```
-
-### Search for Exact Words
-
-Use `\b` for word boundaries:
-
-```sh
-ggrep "\berror\b" logs.txt
-```
-
-## Differences Between `ggrep` and `grep`
-
-| Feature                   | `ggrep` (Golang)          | `grep` (GNU)          |
-| ------------------------- | ------------------------- | --------------------- |
-| **Default regex support** | ✅ Yes (always enabled)   | ❌ No (`-E` required) |
-| **Recursive search**      | ✅ `-r`                   | ✅ `-r`               |
-| **Invert match**          | ✅ `-v`                   | ✅ `-v`               |
-| **Count matches**         | ✅ `-c`                   | ✅ `-c`               |
-| **Color highlighting**    | ✅ ANSI-coded             | ✅ `--color=auto`     |
-| **Word boundary search**  | ✅ `\bword\b`             | ✅ `\bword\b`         |
-| **File pattern support**  | ✅ Uses `filepath.Glob()` | ❌ Relies on shell    |
-
-## Contributing
-
-Contributions are welcome! Feel free to open an issue or submit a pull request.
-
-## License
-
-This project is licensed under the MIT License.
-# go-grep
+MIT License
